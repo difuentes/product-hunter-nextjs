@@ -19,7 +19,7 @@ const ContenedorHeader = Styled.div`
 `
 
 const Logo = Styled.p`
-    background-image : url('/static/img/logo.png');
+   
     background-repeat: no-repeat;
     color: var(--naranja);
     font-size: 4rem;
@@ -50,8 +50,10 @@ const Header = () => {
 
                         `}
                     >
+                        
                         <Link href="/">
-                            <Logo>P</Logo>
+                           
+                          <img css={css`margin-right: 1rem;`} src="static/img/logo.png"/> 
                         </Link>
                         
                         <Buscar/>
