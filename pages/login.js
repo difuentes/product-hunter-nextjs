@@ -1,101 +1,95 @@
-import React,{useState} from 'react';
+import React, { useState } from 'react';
+import { css } from '@emotion/core';
+import Router from 'next/router';
 import Layout from '../components/layout/Layout';
-import {css} from '@emotion/core';
-import Router from 'next/router'
+import { Formulario, Campo, InputSubmit, Error } from '../components/ui/Formulario';
 
-//UI
-import {Formulario,Campo,InputSubmit,Error} from '../components/ui/Formulario';
-//validaciones 
+import firebase from '../firebase';
+
+// validaciones
 import useValidacion from '../hooks/useValidacion';
-import ValidarLogin from '../validacion/validacionLogin';
-//firebase
-import firebase from '../firebase'
+import validarIniciarSesion from '../validacion/validarIniciarSesion';
 
- //State Inicial 
- const STATE_INICIAL = {
+const STATE_INICIAL = {
   email: '',
   password: ''
 }
- 
 
-const Login = () =>{
+const Login = () => {
 
-  const [error,guardarError] = useState(false)
+  const [ error, guardarError] = useState(false);
 
-  const {valores, errores, handleSubmit,handleChange,handleBlur} = useValidacion(STATE_INICIAL,ValidarLogin,iniciarSesion);
+  const { valores, errores, handleSubmit, handleChange, handleBlur } = useValidacion(STATE_INICIAL, validarIniciarSesion, iniciarSesion);
 
-  //destructuring valores
   const { email, password } = valores;
-  
-  // funcion iniciar sesion
 
-  async function iniciarSesion(){
-      try {
-
-        const usuario = await firebase.login(email,password);
-        Router.push('/')
-
-      } catch (error) {
-        console.log('Hubo un error autenticar el usuario',error.message);
-        guardarError(error.message)
-      }
+  async function iniciarSesion() {
+    try {
+      await firebase.login(email, password);
+      Router.push('/');
+    } catch (error) {
+      console.error('Hubo un error al autenticar el usuario ', error.message);
+      guardarError(error.message);
+    }
   }
 
-  return (  
-     <div>
-        <Layout>
-          <>
-            <h1
-              css={css`
-                text-align: center;
-                margin-top: 5rem;
-                color: #33A5FF;
-                font-size: 3rem;
-              `}
-            >LOGIN</h1>
-            <Formulario
-              onSubmit={handleSubmit}
-            >
-               
-                <Campo>
-                    <label htmlFor="email">Email</label>
-                    <input 
-                        type="email"
-                        id="email"
-                        placeholder="Tu Email"
-                        name="email"
-                        value={email}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                    />
-                </Campo>
-                {errores.email && <Error>{errores.email}</Error>}
 
-                <Campo>
-                    <label htmlFor="password">Password</label>
-                    <input 
-                        type="password"
-                        id="password"
-                        placeholder="Tu password"
-                        name="password"
-                        value={password}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                    />
-                </Campo>
-                {errores.password && <Error>{errores.password}</Error>}
+  return (
+    <div>
+      <Layout>
+        <>
+          <h1
+            css={css`
+              text-align: center;
+              margin-top: 5rem;
+              color: #DA552F;
+              text-transform: uppercase;
+              
+            `}
+          >Iniciar Sesión</h1>
+          <Formulario
+            onSubmit={handleSubmit}
+            noValidate
+          >  
+              <Campo>
+                  <label htmlFor="email">Email</label>
+                  <input 
+                      type="email"
+                      id="email"
+                      placeholder="Tu Email"
+                      name="email"
+                      value={email}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                  />
+              </Campo>
+              {errores.email && <Error>{errores.email}</Error> }
+  
+              <Campo>
+                  <label htmlFor="password">Password</label>
+                  <input 
+                      type="password"
+                      id="password"
+                      placeholder="Tu Password"
+                      name="password"
+                      value={password}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                  />
+              </Campo>
+              {errores.password && <Error>{errores.password}</Error> }
 
-                 {error && <Error>{error}</Error> }
-                <InputSubmit 
-                  type="submit"
-                  value="Iniciar Sesion"
-                />
-            </Formulario>
-          </>
-        </Layout>
-      </div>
-
-  );
+              {error && <Error>{error} </Error>}
+  
+              <InputSubmit 
+                type="submit"
+                value="Iniciar Sesión"
+              />
+          </Formulario>
+        </>
+      </Layout>
+    </div>
+  )
 }
- 
-export default Login;
+
+export default Login

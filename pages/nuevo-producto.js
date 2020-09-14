@@ -1,150 +1,156 @@
-import React,{useState,useContext} from 'react';
+import React, { useState, useContext } from 'react';
+import { css } from '@emotion/core';
+import Router, { useRouter } from 'next/router';
+import FileUploader from 'react-firebase-file-uploader';
 import Layout from '../components/layout/Layout';
-import {css} from '@emotion/core';
-import Router ,{useRouter} from 'next/router'
+import { Formulario, Campo, InputSubmit, Error } from '../components/ui/Formulario';
 
-//UI
-import {Formulario,Campo,InputSubmit,Error} from '../components/ui/Formulario';
-//validaciones 
+import { FirebaseContext } from '../firebase';
+
+import Error404 from '../components/layout/404';
+
+// validaciones
 import useValidacion from '../hooks/useValidacion';
-import validacionCrearProducto from '../validacion/validacionCrearProducto';
-//firebase
-import {firebase,FirebaseContext} from '../firebase'
-import FileUploader from 'react-firebase-file-uploader'
+import validarCrearProducto from '../validacion/validarCrearProducto';
 
- //State Inicial 
- const STATE_INICIAL = {
+const STATE_INICIAL = {
   nombre: '',
   empresa: '',
-  //imagen: '',
+    imagen: '',
   url: '',
   descripcion: ''
 }
 
 const NuevoProducto = () => {
 
-  //state de las imagenes 
-  const [nombreImagen,guardarNombre] = useState('');
-  const [subiendo,guardarSubiendo] = useState(false);
-  const [progreso,guardarProgreso] = useState(0);
-  const [urlImg,guardarUrlImg] = useState('');
+  // state de las imagenes
+  const [nombreimagen, guardarNombre] = useState('');
+  const [subiendo, guardarSubiendo] = useState(false);
+  const [ progreso, guardarProgreso ] = useState(0);
+  const [urlimagen, guardarUrlImagen] = useState('');
 
-  const [error,guardarError] = useState(false)
+  const [ error, guardarError] = useState(false);
 
-  const {valores, errores, handleSubmit,handleChange,handleBlur} = useValidacion(STATE_INICIAL,validacionCrearProducto,crearProducto);
+  const { valores, errores, handleSubmit, handleChange, handleBlur } = useValidacion(STATE_INICIAL, validarCrearProducto, crearProducto);
 
-  //destructuring valores
-  const { nombre, empresa, imagen,url,descripcion } = valores;
+  const { nombre, empresa, imagen, url, descripcion } = valores;
 
-  //context con la operaciones crud de firebase
-  const {usuario,firebase} = useContext(FirebaseContext)
-  
-  //hook routing para redireccionar
+  // hook de routing para redireccionar
   const router = useRouter();
-  //funcion crear Cuenta
-  async function crearProducto(){
-    //si el usuario no esta autenticado llevar a login
-    if(!usuario){
-      return  router.push('/login')
+
+  // context con las operaciones crud de firebase
+  const { usuario, firebase } = useContext(FirebaseContext);
+
+  async function crearProducto() {
+
+    // si el usuario no esta autenticado llevar al login
+    if(!usuario) {
+      return router.push('/login');
     }
 
-    //crear objeto de nuevo producto
+    // crear el objeto de nuevo producto 
     const producto = {
-      nombre,
-      empresa,
-      url,
-      urlImg,
-      descripcion,
-      votos:0,
-      comentarios:[],
-      creado:Date.now()
+        nombre, 
+        empresa, 
+        url, 
+        urlimagen,
+        descripcion,
+        votos: 0,
+        comentarios: [],
+        creado: Date.now(), 
+        creador: {
+          id: usuario.uid,
+          nombre: usuario.displayName
+        }, 
+        haVotado: []
     }
 
-    //insertar en firebase
+    // insertarlo en la base de datos
     firebase.db.collection('productos').add(producto);
+
+    return router.push('/');
+
   }
 
- 
 
   const handleUploadStart = () => {
-    guardarProgreso(0);
-    guardarSubiendo(true);
-}
+      guardarProgreso(0);
+      guardarSubiendo(true);
+  }
 
-const handleProgress = progreso => guardarProgreso({ progreso });
+  const handleProgress = progreso => guardarProgreso({ progreso });
 
-const handleUploadError = error => {
-    guardarSubiendo(error);
-    console.error(error);
-};
+  const handleUploadError = error => {
+      guardarSubiendo(error);
+      console.error(error);
+  };
 
-const handleUploadSuccess = nombre => {
-    guardarProgreso(100);
-    guardarSubiendo(false);
-    guardarNombre(nombre)
-    firebase
-        .storage
-        .ref("productos")
-        .child(nombre)
-        .getDownloadURL()
-        .then(url => {
-          console.log(url);
-          guardarUrlImg(url);
-        } );
-};
+  const handleUploadSuccess = nombre => {
+      guardarProgreso(100);
+      guardarSubiendo(false);
+      guardarNombre(nombre)
+      firebase
+          .storage
+          .ref("productos")
+          .child(nombre)
+          .getDownloadURL()
+          .then(url => {
+            console.log(url);
+            guardarUrlImagen(url);
+          } );
+  };
 
-
-  return (  
-     <div>
-        <Layout>
+  return (
+    <div>
+      <Layout>
+        { !usuario ? <Error404 /> : (
           <>
             <h1
               css={css`
                 text-align: center;
                 margin-top: 5rem;
-                color: #33A5FF;
-                font-size: 3rem;
+                color: #DA552F;
+                text-transform: uppercase;
               `}
-            >NUEVO PRODUCTO</h1>
+            >Nuevo Producto</h1>
             <Formulario
               onSubmit={handleSubmit}
+              noValidate
             >
+
               <fieldset>
-                <legend>Informacion General</legend>
-             
+                <legend>Información General </legend>
+            
                 <Campo>
                     <label htmlFor="nombre">Nombre</label>
                     <input 
                         type="text"
                         id="nombre"
-                        placeholder="Tu Nombre"
+                        placeholder="Nombre del Producto"
                         name="nombre"
                         value={nombre}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                      
                     />
                 </Campo>
 
-                {errores.nombre && <Error>{errores.nombre}</Error>}
+                {errores.nombre && <Error>{errores.nombre}</Error> }
     
                 <Campo>
                     <label htmlFor="empresa">Empresa</label>
                     <input 
                         type="text"
                         id="empresa"
-                        placeholder="Nombre Empresa"
+                        placeholder="Nombre Empresa o Compañia"
                         name="empresa"
                         value={empresa}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                      
                     />
                 </Campo>
 
-                {errores.empresa && <Error>{errores.empresa}</Error>}
-
-               
+                {errores.empresa && <Error>{errores.empresa}</Error> }
+    
                 <Campo>
                     <label htmlFor="imagen">Imagen</label>
                     <FileUploader 
@@ -159,57 +165,56 @@ const handleUploadSuccess = nombre => {
                         onProgress={handleProgress}
                     />
                 </Campo>
-
-               
-            
                 <Campo>
                     <label htmlFor="url">URL</label>
                     <input 
                         type="url"
                         id="url"
                         name="url"
-                        value={url}
                         placeholder="URL de tu producto"
+                        value={url}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                      
                     />
                 </Campo>
 
-                {errores.url && <Error>{errores.url}</Error>}
+                {errores.url && <Error>{errores.url}</Error> }
 
-                </fieldset>
+              </fieldset>
 
-                <fieldset>
-                  <legend>Sobre Tu Producto</legend>
+              <fieldset>
+                <legend>Sobre tu Producto</legend>
 
-                  <Campo>
-                    <label htmlFor="url">Descripcion</label>
+                <Campo>
+                    <label htmlFor="descripcion">Descripcion</label>
                     <textarea 
                         id="descripcion"
                         name="descripcion"
                         value={descripcion}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                      
                     />
                 </Campo>
 
-                {errores.descripcion && <Error>{errores.descripcion}</Error>}
+                {errores.descripcion && <Error>{errores.descripcion}</Error> }
+              </fieldset>
 
-                </fieldset>
+              
+                
 
-                 {error && <Error>{error}</Error> }
+                {error && <Error>{error} </Error>}
+    
                 <InputSubmit 
                   type="submit"
                   value="Crear Producto"
                 />
             </Formulario>
           </>
-        </Layout>
-      </div>
-
-  );
+        ) }
+        
+      </Layout>
+    </div>
+  )
 }
- 
-export default NuevoProducto;
+
+export default NuevoProducto

@@ -1,74 +1,64 @@
 import styled from '@emotion/styled';
 
-export const  Formulario = styled.form`
+export const Formulario = styled.form`
+    max-width: 600px;
+    width: 95%;
+    margin: 5rem auto 0 auto;
 
-    max-width:600px;
-    width:95%;
-    margin:5rem auto 0 auto;
-
-    fieldset{
+    fieldset {
         margin: 2rem 0;
         border: 1px solid #e1e1e1;
-        font-size: 2rem; 
-        padding:2rem;
-
+        font-size: 2rem;
+        padding: 2rem;
     }
-
-`
+`;
 
 export const Campo = styled.div`
-    margin-botton:2rem;
-    display:flex;
-    align-items:center;
-    margin-top:1rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
 
-    label{
+    label {
         flex: 0 0 150px;
-        font-size:1.8rem;
+        font-size: 1.8rem;
     }
 
-    input,textarea{
-        flex:1;
+    input, 
+    textarea {
+        flex: 1;
         padding: 1rem;
     }
-    textarea{
-        heigth:400px;
+    textarea {
+        height: 400px;
     }
-    
-`
+`;
 
 export const InputSubmit = styled.input`
     background-color: #33A5FF;
-    width:100%;
+    width: 100%;
     padding: 1.5rem;
-    
-    text-aling:center;
-    color:#FFF;
-    font-size:1.8rem;
-    text-transform:uppercase;
-    border:solid;
-    Border-color:white;
-    font-family: 'PT Sans' ,sans-serif;
-    font-weight:700;
-    margin-top:1rem;
+    text-align: center;
+    color: #FFF;
+    font-size: 1.8rem;
+    text-transform: uppercase;
+    border: none;
+    font-family: 'PT Sans', sans-serif;
+    font-weight: 700;
     border-radius: 15px;
 
     &:hover {
-        cursor:pointer;
+        cursor: pointer;
     }
+`;
 
-`   
-
-export const Error = styled.p `
+export const Error = styled.p`
     background-color: red;
-    padding:1rem;
-    font-family : 'PT Sans',sans-serif;
-    font-weight:700;
+    padding: 1rem;
+    font-family: 'PT Sans', sans-serif;
+    font-weight: 700;
     font-size: 1.4rem;
-    color:white;
-    text-align:center;
-    text-transform: uppercase ;
+    color: #FFF;
+    text-align: center;
+    text-transform: uppercase;
     margin: 2rem 0;
-    border-radius: 15px;
-
-`
+`;

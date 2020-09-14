@@ -1,18 +1,16 @@
-import React,{useState} from 'react';
+import React, { useState } from 'react';
+import { css } from '@emotion/core';
+import Router from 'next/router';
 import Layout from '../components/layout/Layout';
-import {css} from '@emotion/core';
-import Router from 'next/router'
+import { Formulario, Campo, InputSubmit, Error } from '../components/ui/Formulario';
 
-//UI
-import {Formulario,Campo,InputSubmit,Error} from '../components/ui/Formulario';
-//validaciones 
+import firebase from '../firebase';
+
+// validaciones
 import useValidacion from '../hooks/useValidacion';
 import validarCrearCuenta from '../validacion/validarCrearCuenta';
-//firebase
-import firebase from '../firebase'
 
- //State Inicial 
- const STATE_INICIAL = {
+const STATE_INICIAL = {
   nombre: '',
   email: '',
   password: ''
@@ -20,96 +18,93 @@ import firebase from '../firebase'
  
 const CrearCuenta = () => {
 
-  const [error,guardarError] = useState(false)
+  const [ error, guardarError] = useState(false);
 
-  const {valores, errores, handleSubmit,handleChange,handleBlur} = useValidacion(STATE_INICIAL,validarCrearCuenta,crearCuenta);
+  const { valores, errores, handleSubmit, handleChange, handleBlur } = useValidacion(STATE_INICIAL, validarCrearCuenta, crearCuenta);
 
-  //destructuring valores
   const { nombre, email, password } = valores;
-  
-  //funcion crear Cuenta
-  async function crearCuenta(){
 
+  async function crearCuenta() {
     try {
-      await firebase.registrar(nombre,email,password);
-      Router.push('/')
+      await firebase.registrar(nombre, email, password);
+      Router.push('/');
     } catch (error) {
-        console.log('Hubo un error al crear el usuario',error.message);
-        guardarError(error.message)
+      console.error('Hubo un error al crear el usuario ', error.message);
+      guardarError(error.message);
     }
-
   }
 
-  return (  
-     <div>
-        <Layout>
-          <>
-            <h1
-              css={css`
-                text-align: center;
-                margin-top: 5rem;
-                color: #33A5FF;
-                font-size: 3rem;
-              `}
-            >CREAR CUENTA</h1>
-            <Formulario
-              onSubmit={handleSubmit}
-            >
-                <Campo>
-                    <label htmlFor="nombre">Nombre</label>
-                    <input 
-                        type="text"
-                        id="nombre"
-                        placeholder="Tu Nombre"
-                        name="nombre"
-                        value={nombre}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                      
-                    />
-                </Campo>
 
-                {errores.nombre && <Error>{errores.nombre}</Error>}
-    
-                <Campo>
-                    <label htmlFor="email">Email</label>
-                    <input 
-                        type="email"
-                        id="email"
-                        placeholder="Tu Email"
-                        name="email"
-                        value={email}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                    />
-                </Campo>
-                {errores.email && <Error>{errores.email}</Error>}
+  return (
+    <div>
+      <Layout>
+        <>
+          <h1
+            css={css`
+              text-align: center;
+              margin-top: 5rem;
+              color: #DA552F;
+              text-transform: uppercase;
+            `}
+          >Crear Cuenta</h1>
+          <Formulario
+            onSubmit={handleSubmit}
+            noValidate
+          >
+              <Campo>
+                  <label htmlFor="nombre">Nombre</label>
+                  <input 
+                      type="text"
+                      id="nombre"
+                      placeholder="Tu Nombre"
+                      name="nombre"
+                      value={nombre}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                  />
+              </Campo>
 
-                <Campo>
-                    <label htmlFor="password">Password</label>
-                    <input 
-                        type="password"
-                        id="password"
-                        placeholder="Tu password"
-                        name="password"
-                        value={password}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                    />
-                </Campo>
-                {errores.password && <Error>{errores.password}</Error>}
+              {errores.nombre && <Error>{errores.nombre}</Error> }
+  
+              <Campo>
+                  <label htmlFor="email">Email</label>
+                  <input 
+                      type="email"
+                      id="email"
+                      placeholder="Tu Email"
+                      name="email"
+                      value={email}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                  />
+              </Campo>
+              {errores.email && <Error>{errores.email}</Error> }
+  
+              <Campo>
+                  <label htmlFor="password">Password</label>
+                  <input 
+                      type="password"
+                      id="password"
+                      placeholder="Tu Password"
+                      name="password"
+                      value={password}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                  />
+              </Campo>
+              {errores.password && <Error>{errores.password}</Error> }
 
-                 {error && <Error>{error}</Error> }
-                <InputSubmit 
-                  type="submit"
-                  value="Crear Cuenta"
-                />
-            </Formulario>
-          </>
-        </Layout>
-      </div>
-
-  );
+              {error && <Error>{error} </Error>}
+  
+              <InputSubmit 
+                type="submit"
+                value="Crear Cuenta"
+              />
+          </Formulario>
+        </>
+      </Layout>
+    </div>
+  )
 }
- 
-export default CrearCuenta;
+
+export default CrearCuenta
